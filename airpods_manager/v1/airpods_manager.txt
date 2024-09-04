@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Ersetze durch die MAC-Adresse deiner AirPods Pro
+AIRPODS_MAC="XX:XX:XX:XX:XX:XX"
+
+# Funktion: Verbinden der AirPods Pro
+function connect_airpods {
+    echo "Verbinde mit den AirPods Pro..."
+    BluetoothConnector --connect "$AIRPODS_MAC"
+    if [ $? -eq 0 ]; then
+        echo "AirPods Pro verbunden."
+    else
+        echo "Fehler beim Verbinden der AirPods Pro."
+    fi
+}
+
+# Funktion: Trennen der AirPods Pro
+function disconnect_airpods {
+    echo "Trenne die AirPods Pro..."
+    BluetoothConnector --disconnect "$AIRPODS_MAC"
+    if [ $? -eq 0 ]; then
+        echo "AirPods Pro getrennt."
+    else
+        echo "Fehler beim Trennen der AirPods Pro."
+    fi
+}
+
+# Funktion: Überprüfen des Verbindungsstatus
+function check_status {
+    STATUS=$(blueutil --paired | grep "$AIRPODS_MAC")
+    if echo "$STATUS" | grep -q "connected: yes"; then
+        echo "AirPods Pro sind verbunden."
+    else
+        echo "AirPods Pro sind nicht verbunden."
+    fi
+}
+
+# Funktion: Batteriestatus anzeigen (optional, falls AirPods Battery CLI installiert ist)
+function battery_status {
+    echo "Batteriestatus der AirPods Pro anzeigen..."
+    # Hier wird das AirPods Battery CLI Skript aufgerufen, falls vorhanden
+    python3 /path/to/airpods-battery.py
+}
+
+# Hauptmenü
+echo "AirPods Pro Manager"
+echo "1) Verbinden"
+echo "2) Trennen"
+echo "3) Verbindungsstatus prüfen"
+echo "4) Batteriestatus anzeigen"
+echo "5) Beenden"
+read -p "Bitte wähle eine Option: " choice
+
+case $choice in
+    1) connect_airpods ;;
+    2) disconnect_airpods ;;
+    3) check_status ;;
+    4) battery_status ;;
+    5) echo "Programm beendet."; exit ;;
+    *) echo "Ungültige Option"; exit 1 ;;
+esac
